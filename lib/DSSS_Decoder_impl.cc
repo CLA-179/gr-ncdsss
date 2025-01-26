@@ -110,11 +110,14 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
 
     // printf("%d\n", gold_index);
 
-    for (int i = 0; i < noutput_items; i++) {
-        if (in[i] == 0) {
-            zero_count++;
+    if (!find_flag) {
+        for (int i = 0; i < noutput_items; i++) {
+            if (in[i] == 0) {
+                zero_count++;
+            }
         }
     }
+
 
     if (zero_count < noutput_items) // if all data is zero, dont poccess to save the time.
     {
