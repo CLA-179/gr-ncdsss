@@ -13,8 +13,8 @@
 /* If manual edits are made, the following tags should be modified accordingly.    */
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
-/* BINDTOOL_HEADER_FILE(DSSS_Decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(94bafe92bd774c6860a1b3b41b56d5cf)                     */
+/* BINDTOOL_HEADER_FILE(char_Resampler.h)                                        */
+/* BINDTOOL_HEADER_FILE_HASH(2c02dd7628ecdc5fd9d3050b54c61252)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,25 +23,23 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/ncdsss/DSSS_Decoder.h>
+#include <gnuradio/ncdsss/char_Resampler.h>
 // pydoc.h is automatically generated in the build directory
-#include <DSSS_Decoder_pydoc.h>
+#include <char_Resampler_pydoc.h>
 
-void bind_DSSS_Decoder(py::module& m)
+void bind_char_Resampler(py::module& m)
 {
 
-    using DSSS_Decoder    = ::gr::ncdsss::DSSS_Decoder;
+    using char_Resampler    = ::gr::ncdsss::char_Resampler;
 
 
-    py::class_<DSSS_Decoder, gr::block, gr::basic_block,
-        std::shared_ptr<DSSS_Decoder>>(m, "DSSS_Decoder", D(DSSS_Decoder))
+    py::class_<char_Resampler, gr::block, gr::basic_block,
+        std::shared_ptr<char_Resampler>>(m, "char_Resampler", D(char_Resampler))
 
-        .def(py::init(&DSSS_Decoder::make),
-           py::arg("x1"),
-           py::arg("x2"),
-           py::arg("n1"),
-           py::arg("n2"),
-           D(DSSS_Decoder,make)
+        .def(py::init(&char_Resampler::make),
+           py::arg("symbol") = 3069000,
+           py::arg("data") = 16384,
+           D(char_Resampler,make)
         )
         
 

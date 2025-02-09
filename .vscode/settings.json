@@ -2,6 +2,9 @@
     "files.associations": {
         "complex": "cpp",
         "numeric": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "algorithm": "cpp"
     }
 }

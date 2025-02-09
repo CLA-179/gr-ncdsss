@@ -12,5 +12,6 @@
 install(FILES
     api.h
     DSSS_Decoder.h
-    bpsk_squelch.h DESTINATION include/gnuradio/ncdsss
+    bpsk_squelch.h
+    char_Resampler.h DESTINATION include/gnuradio/ncdsss
 )

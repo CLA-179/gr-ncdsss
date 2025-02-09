@@ -30,7 +30,8 @@ include(GrPybind)
 
 list(APPEND ncdsss_python_files
     DSSS_Decoder_python.cc
-    bpsk_squelch_python.cc python_bindings.cc)
+    bpsk_squelch_python.cc
+    char_Resampler_python.cc python_bindings.cc)
 
 GR_PYBIND_MAKE_OOT(ncdsss
    ../../..

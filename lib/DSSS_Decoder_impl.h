@@ -17,9 +17,10 @@ namespace gr {
     {
      private:
       // Nothing to declare in this block.
+      // uint16_t _x1, _x2, _n1, _n2;
 
      public:
-      DSSS_Decoder_impl();
+      DSSS_Decoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2);
       ~DSSS_Decoder_impl();
 
       // Where all the action really happens

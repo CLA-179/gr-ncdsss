@@ -1,10 +1,10 @@
-id: ncdsss_DSSS_Decoder
-label: DSSS_Decoder
+id: ncdsss_char_Resampler
+label: char_Resampler
 category: '[ncdsss]'
 
 templates:
   imports: from gnuradio import ncdsss
-  make: ncdsss.DSSS_Decoder(${x1}, ${x2}, ${n1}, ${n2})
+  make: ncdsss.char_Resampler(${symbol})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -13,19 +13,17 @@ templates:
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 #     * default
 parameters:
-- id: x1
-  label: x1
-  dtype: short
-  default: abcd
-- id: x2
-  label: x2
-  dtype: short
-- id: n1
-  label: n1
-  dtype: short
-- id: n2
-  label: n2
-  dtype: short
+- id: symbol
+  label: Symbol rate
+  dtype: int
+  default: 3069000
+- id: data
+  label: Data rate
+  dtype: int
+  default: 16384
+#- id: ...
+#  label: ...
+#  dtype: ...
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
@@ -35,14 +33,14 @@ parameters:
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
 inputs:
-- label: in1
+- label: in
   domain: stream
   dtype: byte
 #  vlen: ...
 #  optional: ...
 
 outputs:
-- label: out1
+- label: out
   domain: stream
   dtype: byte
 #  vlen: ...

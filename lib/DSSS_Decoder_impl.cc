@@ -61,23 +61,23 @@ namespace ncdsss {
 using input_type = char;
 // #pragma message("set the following appropriately and remove this warning")
 using output_type = char;
-DSSS_Decoder::sptr DSSS_Decoder::make()
+DSSS_Decoder::sptr DSSS_Decoder::make(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2)
 {
-    return gnuradio::make_block_sptr<DSSS_Decoder_impl>();
+    return gnuradio::make_block_sptr<DSSS_Decoder_impl>(x1, x2, n1, n2);
 }
 
 
 /*
  * The private constructor
  */
-DSSS_Decoder_impl::DSSS_Decoder_impl()
+DSSS_Decoder_impl::DSSS_Decoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2)
     : gr::block("DSSS_Decoder",
                 gr::io_signature::make(
                     1 /* min inputs */, 1 /* max inputs */, sizeof(input_type)),
                 gr::io_signature::make(
                     1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)))
 {
-    gold_gen(0x7f, 0x49, 0x32e, 0x344);
+    gold_gen(x1, x2, n1, n2);
     find_flag = 0;
 }
 
@@ -153,21 +153,35 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
         }
 
         if (find_flag) {
-            // static int now = 0;
-            for (int i = 0; i < noutput_items; i++) {
-                out[i] = ((in[i]) ^ gold[gold_index++]);
-                // printf("%d", out[i]);
-                // if (now < 0)
-                // {
-                // printf ("%d, %d", gold_index, i);
-                // }
+            static int last = 0;
+            int i = 0;
+            for (i = 0; i < noutput_items; i += 187) {
+                int change_count = 0;
+                for (int j = 0; j < 187; j++) {
+                    out[i * 187 + j] = ((in[i * 187 + j]) ^ gold[gold_index++]);
+                    if (out[i * 187 + j] != last)
+                    {
+                        change_count ++;
+                    }
+                    last = out[i * 187 + j];
 
-                if (gold_index == 1023)
-                    gold_index = 0;
+                    if (gold_index == 1023)
+                        gold_index = 0;
+                }
+                if (change_count > 10)
+                {
+                    find_flag = 0;
+                }
+                
             }
+            for ( ; i < noutput_items; i++)
+            {
+                out[i] = ((in[i]) ^ gold[gold_index++]);
+                if (gold_index == 1023)
+                        gold_index = 0;
+            }
+            
 
-            // find_flag = 0;
-            // printf("\n");
         } else {
             for (int i = 0; i < noutput_items; i++) {
                 out[i] = 0;

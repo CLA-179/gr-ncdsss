@@ -32,7 +32,7 @@ namespace gr {
        * class. ncdsss::DSSS_Decoder::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2);
     };
 
   } // namespace ncdsss
