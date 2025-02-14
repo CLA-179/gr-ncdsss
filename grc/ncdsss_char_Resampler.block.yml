@@ -4,7 +4,7 @@ category: '[ncdsss]'
 
 templates:
   imports: from gnuradio import ncdsss
-  make: ncdsss.char_Resampler(${symbol})
+  make: ncdsss.char_Resampler(${symbol}, ${data})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:

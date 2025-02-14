@@ -108,6 +108,7 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
 
     int zero_count = 0;
 
+
     // printf("%d\n", gold_index);
 
     if (!find_flag) {
@@ -139,7 +140,7 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
                     }
                     if (change_count < 3) {
                         // printf("%d\n", noutput_items);
-                        printf("find!!\n");
+                        printf("find!!,start\n");
 
                         gold_index = i;
                         find_flag = 1;
@@ -153,34 +154,39 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
         }
 
         if (find_flag) {
-            static int last = 0;
+            int last = 0;
+            int now;
             int i = 0;
-            for (i = 0; i < noutput_items; i += 187) {
+            for (i = 0; i < noutput_items - 187 && i > -1 && find_flag; i += 187) {
                 int change_count = 0;
                 for (int j = 0; j < 187; j++) {
-                    out[i * 187 + j] = ((in[i * 187 + j]) ^ gold[gold_index++]);
-                    if (out[i * 187 + j] != last)
-                    {
-                        change_count ++;
+                    now = ((in[i + j]) ^ gold[gold_index++]);
+                    
+                    if (now != last) {
+                        change_count++;
+                        // printf("changed\n");
                     }
-                    last = out[i * 187 + j];
+                    last = now;
+
+                    out[i + j] = now;
 
                     if (gold_index == 1023)
                         gold_index = 0;
                 }
-                if (change_count > 10)
-                {
+                if (change_count > 30) {
                     find_flag = 0;
+                    printf("refinding....\n");
+                    break;
+                } else {
+                    // printf("%d\n", change_count);
                 }
-                
             }
-            for ( ; i < noutput_items; i++)
-            {
+            for (; i < noutput_items; i++) {
                 out[i] = ((in[i]) ^ gold[gold_index++]);
                 if (gold_index == 1023)
-                        gold_index = 0;
+                    gold_index = 0;
             }
-            
+
 
         } else {
             for (int i = 0; i < noutput_items; i++) {
@@ -190,8 +196,6 @@ int DSSS_Decoder_impl::general_work(int noutput_items,
     } else {
         for (int i = 0; i < noutput_items; i++) {
             out[i] = 0;
-            // if (++gold_index == 1023)
-            //         gold_index = 0;
         }
     }
 
