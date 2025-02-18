@@ -55,24 +55,25 @@ int char_Resampler_impl::general_work(int noutput_items,
 
 
     this->consume_each(noutput_items);
-    
+
     int last = in[0];
     bool sync_flag = false;
-    int resamp_count = 0;
-    int zero_count = 0, one_count = 0;
+    static int resamp_count = 0;
+    static int zero_count = 0, one_count = 0;
     int out_count = 0;
-    int cont_count = 0;
+    // int cont_count = 0;
+    float sub_one_sum = 0;
 
     for (int i = 0; i < noutput_items; i++) {
         if (in[i] != last) {
             for (int j = 0; j < 10; j++) {
-                if (last != in[i + j]) {
+                if (in[i + j +1] != in[i + j]) {
                     sync_flag = false;
                     break;
                 } else {
                     sync_flag = true;
                 }
-                last = in[i + j];
+                // last = in[i + j];
             }
         }
         last = in[i];
@@ -83,14 +84,37 @@ int char_Resampler_impl::general_work(int noutput_items,
             one_count++;
         }
 
-        if (++resamp_count > dev - 1 || sync_flag) {
+        if (++resamp_count > dev - 1) {
+            sub_one_sum += dev - resamp_count;
             out[out_count++] = one_count > zero_count ? 1 : 0;
+            // printf("1:%d\t%d\t%d\t:\t%d\n", one_count, zero_count, resamp_count, out[out_count - 1]);
             one_count = 0;
             zero_count = 0;
             resamp_count = 0;
-            i += 4; // jump four bit between two data bit
-            sync_flag = false;
+            // resamp_count = 3;
+            // i += 3; // jump 3 bit between two data bit
         }
+
+        if (sync_flag) {
+            sync_flag = false;
+            sub_one_sum = 0;
+            if (resamp_count > dev / 2) {
+                out[out_count++] = one_count > zero_count ? 1 : 0;
+                // printf("2:%d\t%d\t%d\t:\t%d\n", one_count, zero_count, resamp_count, out[out_count - 1]);
+                one_count = 0;
+                zero_count = 0;
+                resamp_count = 0;
+            } else {
+                resamp_count = 0;
+            }
+        }
+
+        if (sub_one_sum >= 1)
+        {
+            i++;
+            sub_one_sum = 0;
+        }
+        
     }
 
 
