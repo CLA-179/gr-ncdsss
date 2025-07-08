@@ -24,6 +24,7 @@ namespace py = pybind11;
     void bind_DSSS_Decoder(py::module& m);
     void bind_bpsk_squelch(py::module& m);
     void bind_char_Resampler(py::module& m);
+    void bind_DSSS_Encoder(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 
@@ -55,5 +56,6 @@ PYBIND11_MODULE(ncdsss_python, m)
     bind_DSSS_Decoder(m);
     bind_bpsk_squelch(m);
     bind_char_Resampler(m);
+    bind_DSSS_Encoder(m);
     // ) END BINDING_FUNCTION_CALLS
 }

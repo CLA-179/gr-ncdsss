@@ -9,5 +9,6 @@
 install(FILES
     ncdsss_DSSS_Decoder.block.yml
     ncdsss_bpsk_squelch.block.yml
-    ncdsss_char_Resampler.block.yml DESTINATION share/gnuradio/grc/blocks
+    ncdsss_char_Resampler.block.yml
+    ncdsss_DSSS_Encoder.block.yml DESTINATION share/gnuradio/grc/blocks
 )

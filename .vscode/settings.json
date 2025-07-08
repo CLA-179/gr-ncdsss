@@ -5,6 +5,7 @@
         "cmath": "cpp",
         "bitset": "cpp",
         "chrono": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "gold.h": "c"
     }
 }

@@ -8,99 +8,22 @@
 #include "DSSS_Decoder_impl.h"
 #include <gnuradio/io_signature.h>
 
+#include "datastruct/gold.h"
+
 typedef unsigned char uint8_t;
 
 #define MAX_DATABUF_LEN 2048
 
-uint8_t gold[1023];
+static uint8_t gold[1023];
 uint8_t find_flag;
 u_int16_t gold_index = 0;
 u_int16_t data_index = 0;
 
-uint32_t gold_buf[1023];
+static uint32_t gold_buf[1023];
 uint32_t data_buf[MAX_DATABUF_LEN];
 uint8_t un_full_data_buf_len;
 uint8_t un_full_data_buf;
 uint16_t data_buf_used;
-
-
-int count_one(unsigned short in)
-{
-    static int out[16] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
-
-    int o = out[in & 0x0f];
-    o += out[(in >> 4) & 0x0f];
-    o += out[(in >> 8) & 0x0f];
-    o += out[(in >> 12) & 0x0f];
-
-    // printf ("%d\n", o);
-
-    return o;
-}
-
-int count_one32(unsigned int in)
-{
-    static int out[16] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
-
-    int o = out[in & 0x0f];
-    o += out[(in >> 4) & 0x0f];
-    o += out[(in >> 8) & 0x0f];
-    o += out[(in >> 12) & 0x0f];
-    o += out[(in >> 16) & 0x0f];
-    o += out[(in >> 20) & 0x0f];
-    o += out[(in >> 24) & 0x0f];
-    o += out[(in >> 28) & 0x0f];
-
-    // printf ("%d\n", o);
-
-    return o;
-}
-
-void gold_gen(unsigned short _x1,
-              unsigned short _x2,
-              unsigned short _n1,
-              unsigned short _n2)
-{
-    unsigned short x1, x2, n1, n2, temp;
-
-    x1 = _x1;
-    n1 = _n1;
-    x2 = _x2;
-    n2 = _n2;
-
-    for (int i = 0; i < 1023; i++) {
-        gold[i] = ((x1 ^ x2) & 0x200) >> 9;
-        printf("%d", ((x1 ^ x2) & 0x200) >> 9);
-
-        temp = (count_one(x1 & n1) & 0x01);
-        x1 = ((x1 << 1) & 0x3fe) | temp;
-
-        temp = (count_one(x2 & n2) & 0x01);
-        x2 = ((x2 << 1) & 0x3fe) | temp;
-    }
-    printf("\n");
-}
-
-void gold_buf_gen(void)
-{
-    for (uint16_t i = 0; i < 1023; i ++)
-    {
-        for (uint8_t j = 0; j < 32; j++)
-        {
-            gold_buf[i] <<= 1;
-            gold_buf[i] |= (i + j < 1023 ? gold[i + j] : gold[i + j - 1023]) & 0x01U;
-            
-        }
-        for (uint8_t i = 0; i < 32; i++)
-        {
-            printf("%d", (gold_buf[i] >> i) & 0x01);
-        }
-        printf("\n");
-        
-        
-    }
-    // exit(0);
-}
 
 
 namespace gr {
@@ -126,8 +49,8 @@ DSSS_Decoder_impl::DSSS_Decoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint
                 gr::io_signature::make(
                     1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)))
 {
-    gold_gen(x1, x2, n1, n2);
-    gold_buf_gen();
+    gold_gen(x1, x2, n1, n2, gold);
+    gold_buf_gen(gold, gold_buf);
     find_flag = 0;
 }
 

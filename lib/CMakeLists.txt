@@ -12,9 +12,12 @@
 include(GrPlatform) #define LIB_SUFFIX
 
 list(APPEND ncdsss_sources
+    datastruct/fifobuf.c
+    datastruct/gold.c
     DSSS_Decoder_impl.cc
     bpsk_squelch_impl.cc
     char_Resampler_impl.cc
+    DSSS_Encoder_impl.cc
 )
 
 set(ncdsss_sources "${ncdsss_sources}" PARENT_SCOPE)
