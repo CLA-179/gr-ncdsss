@@ -50,75 +50,67 @@ int char_Resampler_impl::general_work(int noutput_items,
                                       gr_vector_const_void_star& input_items,
                                       gr_vector_void_star& output_items)
 {
-    auto in = static_cast<const input_type*>(input_items[0]);
-    auto out = static_cast<output_type*>(output_items[0]);
+ 
+    const uint8_t* in = static_cast<const uint8_t*>(input_items[0]);  // input_type
+    uint8_t* out = static_cast<uint8_t*>(output_items[0]);            // output_type
 
+    const int input_len = ninput_items[0];
+    const float factor = 3069000.0f / 16384.0f;  // ≈ 187.33
+    const float hfactor = 3069000.0f / 16384.0f / 10;  // ≈ 187.33 / 10
 
-    this->consume_each(noutput_items);
-
-    int last = in[0];
-    bool sync_flag = false;
-    static int resamp_count = 0;
+    static bool sync_locked = false;
+    static float phase = 0.0f;
+    static int last_bit = -1;
     static int zero_count = 0, one_count = 0;
+
     int out_count = 0;
-    // int cont_count = 0;
-    float sub_one_sum = 0;
 
-    for (int i = 0; i < noutput_items; i++) {
-        if (in[i] != last) {
-            for (int j = 0; j < 10; j++) {
-                if (in[i + j +1] != in[i + j]) {
-                    sync_flag = false;
-                    break;
-                } else {
-                    sync_flag = true;
-                }
-                // last = in[i + j];
+    for (int i = 0; i < input_len; ++i) {
+        int bit = in[i];
+
+        // 同步锁定：第一次跳变就锁定
+        if (!sync_locked) {
+            if (last_bit != -1 && bit != last_bit) {
+                sync_locked = true;
+                phase = 0.0f;
+                zero_count = one_count = 0;
             }
+            else
+            {
+                last_bit = bit;
+                continue;
+            }
+            
         }
-        last = in[i];
 
-        if (in[i] == 0) {
-            zero_count++;
-        } else {
+        // 统计当前比特
+        if (bit)
             one_count++;
+        else
+            zero_count++;
+
+        phase += 1.0f;
+
+        // 重采样输出
+        if (phase >= factor) {
+            phase -= factor;
+            out[out_count++] = (one_count > zero_count) ? 1 : 0;
+            
+
+            if (abs(one_count - zero_count) < hfactor)
+                sync_locked = false;
+
+            one_count = zero_count = 0;
+
+            if (out_count >= noutput_items)
+                break;
         }
 
-        if (++resamp_count > dev - 1) {
-            sub_one_sum += dev - resamp_count;
-            out[out_count++] = one_count > zero_count ? 1 : 0;
-            // printf("1:%d\t%d\t%d\t:\t%d\n", one_count, zero_count, resamp_count, out[out_count - 1]);
-            one_count = 0;
-            zero_count = 0;
-            resamp_count = 0;
-            // resamp_count = 3;
-            // i += 3; // jump 3 bit between two data bit
-        }
-
-        if (sync_flag) {
-            sync_flag = false;
-            sub_one_sum = 0;
-            if (resamp_count > dev / 2) {
-                out[out_count++] = one_count > zero_count ? 1 : 0;
-                // printf("2:%d\t%d\t%d\t:\t%d\n", one_count, zero_count, resamp_count, out[out_count - 1]);
-                one_count = 0;
-                zero_count = 0;
-                resamp_count = 0;
-            } else {
-                resamp_count = 0;
-            }
-        }
-
-        if (sub_one_sum >= 1)
-        {
-            i++;
-            sub_one_sum = 0;
-        }
-        
+        last_bit = bit;
     }
 
-
-    // Tell runtime system how many output items we produced.
+    // 通知系统输入消耗了多少
+    consume_each(input_len);
     return out_count;
 }
 
