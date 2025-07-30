@@ -18,9 +18,12 @@ namespace gr {
      private:
       void pmt_in_callback(pmt::pmt_t msg);
       pmt::pmt_t d_in_port;
+      void sender(uint8_t *d, uint32_t len);
+
+      float d_spd;
 
      public:
-      DSSS_Encoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2);
+      DSSS_Encoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2, int data_rate);
       ~DSSS_Encoder_impl();
 
       // Where all the action really happens

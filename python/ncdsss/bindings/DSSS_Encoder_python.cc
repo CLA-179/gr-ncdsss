@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(DSSS_Encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(d963f5372bcc56b3caa1ef25b3748ff4)                     */
+/* BINDTOOL_HEADER_FILE_HASH(03bac84deeb7c17f1ae470f41fcafdfc)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -41,6 +41,7 @@ void bind_DSSS_Encoder(py::module& m)
            py::arg("x2"),
            py::arg("n1"),
            py::arg("n2"),
+           py::arg("data_rate"),
            D(DSSS_Encoder,make)
         )
         

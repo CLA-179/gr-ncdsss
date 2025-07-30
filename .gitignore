@@ -1,2 +1,5 @@
 /build/
-examples/dsssen.py
+/.vscode/
+/examples/**/*.py
+/examples/**/*.bin
+/examples/**/*.wav

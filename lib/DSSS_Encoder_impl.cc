@@ -26,16 +26,16 @@ namespace ncdsss {
 // using input_type = float;
 // #pragma message("set the following appropriately and remove this warning")
 using output_type = char;
-DSSS_Encoder::sptr DSSS_Encoder::make(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2)
+DSSS_Encoder::sptr DSSS_Encoder::make(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2, int data_rate)
 {
-    return gnuradio::make_block_sptr<DSSS_Encoder_impl>(x1, x2, n1, n2);
+    return gnuradio::make_block_sptr<DSSS_Encoder_impl>(x1, x2, n1, n2, data_rate);
 }
 
 
 /*
  * The private constructor
  */
-DSSS_Encoder_impl::DSSS_Encoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2)
+DSSS_Encoder_impl::DSSS_Encoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint16_t n2, int data_rate)
     : gr::sync_block("DSSS_Encoder",
                      gr::io_signature::make(
                          0 /* min inputs */, 0 /* max inputs */, 0),
@@ -51,6 +51,11 @@ DSSS_Encoder_impl::DSSS_Encoder_impl(uint16_t x1, uint16_t x2, uint16_t n1, uint
     fifo_init(&fb, fifobuf, FIFO_SIZE);
 
     set_msg_handler(d_in_port, [this](const pmt::pmt_t& msg) { pmt_in_callback(msg); });
+
+    d_spd = 3069000.0 / data_rate;
+    printf("data_rate:%d\n", data_rate);
+    printf("tx: symbol / data = %f\n", d_spd);
+
 }
 
 /*
@@ -80,11 +85,11 @@ void DSSS_Encoder_impl::pmt_in_callback(pmt::pmt_t msg)
     
 }
 
-void sender(uint8_t *d, uint32_t len)
+void DSSS_Encoder_impl::sender(uint8_t *d, uint32_t len)
 {
     static uint8_t dummy_bit = 0;
-    uint8_t data_index = 0;
-    uint8_t data = 0;
+    static uint32_t data_index = 0;
+    static uint8_t data = 0;
 
     for (uint32_t i = 0; i < len; i++)
     {
@@ -104,7 +109,7 @@ void sender(uint8_t *d, uint32_t len)
 
         data_index ++;
 
-        if (data_index >= 187)
+        if (data_index > d_spd)
         {
             data_index = 0;
         }

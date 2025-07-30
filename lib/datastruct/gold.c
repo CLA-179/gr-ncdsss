@@ -50,7 +50,7 @@ void gold_gen(unsigned short _x1,
 
     for (int i = 0; i < 1023; i++) {
         gold[i] = ((x1 ^ x2) & 0x200) >> 9;
-        printf("%d", ((x1 ^ x2) & 0x200) >> 9);
+        // printf("%d", ((x1 ^ x2) & 0x200) >> 9);
 
         temp = (count_one(x1 & n1) & 0x01);
         x1 = ((x1 << 1) & 0x3fe) | temp;
@@ -58,7 +58,7 @@ void gold_gen(unsigned short _x1,
         temp = (count_one(x2 & n2) & 0x01);
         x2 = ((x2 << 1) & 0x3fe) | temp;
     }
-    printf("\n");
+    // printf("\n");
 }
 
 void gold_buf_gen(unsigned char* gold, unsigned int* gold_buf)
@@ -71,11 +71,11 @@ void gold_buf_gen(unsigned char* gold, unsigned int* gold_buf)
             gold_buf[i] |= (i + j < 1023 ? gold[i + j] : gold[i + j - 1023]) & 0x01U;
             
         }
-        for (unsigned char j = 0; j < 32; j++)
-        {
-            printf("%d", (gold_buf[i] >> j) & 0x01);
-        }
-        printf("\n");
+        // for (unsigned char j = 0; j < 32; j++)
+        // {
+        //     printf("%d", (gold_buf[i] >> j) & 0x01);
+        // }
+        // printf("\n");
         
         
     }

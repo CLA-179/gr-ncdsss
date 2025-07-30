@@ -4,7 +4,7 @@ category: '[ncdsss]'
 
 templates:
   imports: from gnuradio import ncdsss
-  make: ncdsss.DSSS_Encoder(${x1}, ${x2}, ${n1}, ${n2})
+  make: ncdsss.DSSS_Encoder(${x1}, ${x2}, ${n1}, ${n2}, ${data_rate})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -26,6 +26,9 @@ parameters:
 - id: n2
   label: n2
   dtype: short
+- id: data_rate
+  label: data_rate
+  dtype: int
 #- id: ...
 #  label: ...
 #  dtype: ...

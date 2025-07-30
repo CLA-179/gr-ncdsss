@@ -30,7 +30,7 @@ char_Resampler_impl::char_Resampler_impl(int symbol, int data)
                     1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)))
 {
     dev = (double)symbol / data;
-    printf("symbol / data = %f", dev);
+    printf("rx: symbol / data = %f\n", dev);
 }
 
 /*
